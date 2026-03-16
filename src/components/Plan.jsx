@@ -34,7 +34,7 @@ const Card = ({
       {/* Plan Name */}
       <div>
         <p className="text-2xl text-[#0A0A0A]">{name}</p>
-        <p className="text-[#4A5565] mt-1">Up to {employees} employees</p>
+        <p className="text-[#4A5565] mt-1">Up to {employees} users</p>
       </div>
 
       {/* Price */}
