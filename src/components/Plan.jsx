@@ -62,10 +62,10 @@ const Card = ({
         <ul className="space-y-4 mt-8 mb-6">
           {features.map((feature, idx) => (
             <li key={idx} className="flex items-start">
-              {feature.active && (
+              {feature && (
                 <span className="text-[#00A63E] text-lg mr-2">✔</span>
               )}
-              <span className="text-[#364153]">{feature.name}</span>
+              <span className="text-[#364153]">{feature}</span>
             </li>
           ))}
         </ul>
