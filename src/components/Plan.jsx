@@ -114,7 +114,7 @@ const Plan = ({ plans = [], currentPlanId, currentBillingCycle = "monthly", onSu
             key={plan.id}
             id={plan.id}
             name={plan.name}
-            employees={plan.employeeLimit}
+            employees={plan.employeeLimitDisplay}
             price={
               isAnnual
                 ? plan.priceYearly
