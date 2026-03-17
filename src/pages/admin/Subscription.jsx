@@ -159,6 +159,7 @@ const Subscription = () => {
       {/*  Dynamic Plan Component */}
       <Plan
         plans={plans}
+        features={currentPlan?.feature || []}
         currentPlanId={currentPlan?.planId}
         currentBillingCycle={currentPlan?.priceType ?? "monthly"}
         onSubscribe={handleSubscribe}

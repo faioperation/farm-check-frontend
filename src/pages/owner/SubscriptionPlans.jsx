@@ -77,7 +77,7 @@ const SubscriptionPlans = () => {
 
       <ManagePlan plans={plans} />
 
-      {addPlan === "true" && (
+      {/* {addPlan === "true" && (
         <div className="fixed inset-0  bg-[#D9D9D9]/80 flex items-center justify-center z-50 ">
           <div className="bg-[#EFEFEF] rounded-3xl  pt-10 pb-10 px-10 w-[40%]">
             <div className="flex  justify-between">
@@ -147,7 +147,7 @@ const SubscriptionPlans = () => {
             </div>
           </div>
         </div>
-      )}
+      )} */}
     </div>
   );
 };

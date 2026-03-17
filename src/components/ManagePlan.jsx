@@ -3,7 +3,7 @@ import ToggleButton from "./ToggleButton";
 import { RiDeleteBinLine } from "react-icons/ri";
 import { FiEdit } from "react-icons/fi";
 
-const Card = ({ name, price, features = [], employees, farms, trialDays }) => {
+const Card = ({ name, price, features, employees, farms, trialDays, isAnnual, monthlyPrice, yearlyPrice }) => {
   return (
     <div className="bg-white rounded-lg border-2 border-[#E5E7EB] py-8 px-6 flex flex-col hover:shadow-lg transition-all duration-300 md:col-span-4">
       {/* Header + Actions */}
@@ -12,29 +12,24 @@ const Card = ({ name, price, features = [], employees, farms, trialDays }) => {
           <p className="text-2xl text-[#0A0A0A]">{name}</p>
           <p className="text-[#4A5565] mt-1">{employees}</p>
         </div>
-
-        {/* <div className="flex items-center gap-3">
-          <FiEdit className="text-[#667085] cursor-pointer" />
-          <RiDeleteBinLine className="text-red-600 cursor-pointer" />
-        </div> */}
       </div>
 
       {/* Price */}
-      <div className="my-4">
+      <div className="flex flex-col my-4">
         <div className="flex items-end">
-          <p className="text-4xl text-[#0A0A0A]">${price}</p>
-          <span className="text-[#4A5565] ml-1">/month</span>
+          <p className="text-4xl text-[#0A0A0A]">€{price}</p>
+          <span className="text-[#4A5565] ml-1">
+            /{isAnnual ? "year" : "month"}
+          </span>
         </div>
 
-        {/* Yearly calculation */}
-        <p className="text-sm text-[#4A5565] mt-1">
-          ${price * 10}/year (save ${price * 2})
-        </p>
+        {/* Yearly calculation / Savings */}
+      
       </div>
 
       {/* Trial */}
       <div className="bg-[#EFF6FF] p-3 rounded-lg">
-        <p className="text-[#1447E6]">{trialDays || 14} days free trial</p>
+        <p className="text-[#1447E6]">{trialDays } days free trial</p>
       </div>
 
       {/* Features */}
@@ -42,10 +37,10 @@ const Card = ({ name, price, features = [], employees, farms, trialDays }) => {
         <ul className="space-y-4 mb-14 mt-8">
           {features.map((feature, idx) => (
             <li key={idx} className="flex items-start">
-              {feature.active && (
+              {feature && (
                 <span className="text-[#00A63E] text-lg mr-2">✔</span>
               )}
-              <span className="text-[#364153]">{feature.name}</span>
+              <span className="text-[#364153]">{feature}</span>
             </li>
           ))}
         </ul>
@@ -69,17 +64,24 @@ const ManagePlan = ({ plans = [] }) => {
 
   return (
     <div className="">
+      {/* Toggle */}
+      <div className="flex items-center justify-center gap-2 mb-10">
+        <ToggleButton isAnnual={isAnnual} setIsAnnual={setIsAnnual} />
+      </div>
+
       {/* Cards */}
       <div className="grid md:grid-cols-12  gap-6">
         {plans.map((plan, i) => (
           <Card
             key={plan.id || i}
             name={plan.name}
-            employees={`Up to ${plan.employeeLimit} employees`}
+            employees={`Up to ${plan.employeeLimitDisplay} users`}
             price={isAnnual ? plan.priceYearly : plan.priceMonthly}
             isAnnual={isAnnual}
+            monthlyPrice={plan.priceMonthly}
+            yearlyPrice={plan.priceYearly}
             farms={plan.farmsUsing}
-            features={plan.features || []}
+            features={plan.features}
             trialDays={plan.trialDays}
           />
         ))}

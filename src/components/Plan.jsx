@@ -45,11 +45,11 @@ const Card = ({
             /{isAnnual ? "Year" : "Month"}
           </span>
         </div>
-        {isAnnual && (
+       {/* {isAnnual && (
           <p className="text-[#4A5565] mt-1">
             save €{yearlyPrice - monthlyPrice * 12}
           </p>
-        )}
+        )}  */}
       </div>
 
       {/* Trial */}
