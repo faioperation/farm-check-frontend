@@ -91,7 +91,7 @@ const LogIn = () => {
 
   return (
     <main className="bg-white grid justify-center items-center py-10 md:px-11 px-15 rounded-3xl">
-      <form className="gap-5 flex flex-col items-center md:w-[450px] w-full">
+      <form className="gap-5 flex flex-col items-center md:w-[450px] w-full" onSubmit={(e) => { e.preventDefault(); handleLogin(); }}>
         <Image src="/authLogo.png" alt="logo" />
 
         <h3 className="text-[32px] font-medium">
@@ -155,8 +155,7 @@ const LogIn = () => {
         </div>
 
         <button
-          type="button"
-          onClick={handleLogin}
+          type="submit"
           disabled={loginMutation.isPending}
           className="bg-[#F6A62D] text-white w-full py-3 rounded-lg mt-6 flex items-center justify-center gap-2"
         >
