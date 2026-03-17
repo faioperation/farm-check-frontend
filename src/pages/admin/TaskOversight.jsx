@@ -127,13 +127,13 @@ const TaskOversight = () => {
 
         <div className="col-span-6 md:col-span-3 bg-white p-6 rounded-lg border-2 border-[#E5E7EB]">
           <p className="text-[#4A5565]">Completed</p>
-          <p className="text-xl font-semibold text-[#155DFC] mt-1">
+          <p className="text-xl font-semibold text-[#00A63E] mt-1">
             {tasks.filter((t) => t.status === "COMPLETED").length}
           </p>
         </div>
         <div className="col-span-6 md:col-span-3 bg-white p-6 rounded-lg border-2 border-[#E5E7EB]">
           <p className="text-[#4A5565]">In Progress</p>
-          <p className="text-xl font-semibold text-[#00A63E] mt-1">
+          <p className="text-xl font-semibold text-[#155DFC] mt-1">
             {tasks.filter((t) => t.status === "IN_PROGRESS").length}
           </p>
         </div>
