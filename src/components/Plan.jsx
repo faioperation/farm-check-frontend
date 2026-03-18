@@ -9,8 +9,6 @@ const Card = ({
   price,
   isAnnual,
   employees,
-  yearlyPrice,
-  monthlyPrice,
   trialDays,
   features,
   isCurrent,

@@ -14,26 +14,6 @@ import { useQuery } from "@tanstack/react-query";
 
 const Dashboard = () => {
   const axiosSecure = useAxiosSecure();
-  // const alerts = [
-  //   {
-  //     id: 1,
-  //     type: "warning",
-  //     message: 'Farm "Sunset Ranch" subscription expires in 3 days',
-  //     time: "2 hours ago",
-  //   },
-  //   {
-  //     id: 2,
-  //     type: "error",
-  //     message: 'Payment failed for "Riverside Farm"',
-  //     time: "5 hours ago",
-  //   },
-  //   {
-  //     id: 3,
-  //     type: "info",
-  //     message: "2 trial farms will expire tomorrow",
-  //     time: "1 day ago",
-  //   },
-  // ];
   
 
   const { data, isLoading, isError } = useQuery({

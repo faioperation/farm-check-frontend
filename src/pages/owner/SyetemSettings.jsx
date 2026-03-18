@@ -29,8 +29,7 @@ const SystemSettings = () => {
     setError("");
     setLogo(URL.createObjectURL(file));
 
-    //  API hook (later)
-    // uploadLogoToServer(file)
+    
   };
 
   /* ===== REMOVE LOGO ===== */
@@ -48,10 +47,7 @@ const SystemSettings = () => {
       </div>
 
 
-      {/* <div className="mt-6">
-      <UploadImage label={`Platform Logo`} branding={`Platform`} />
-
-      </div> */}
+     
 
       <div className="mt-6">
       <LanguageSupport/>

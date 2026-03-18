@@ -8,7 +8,6 @@ import Password from "../../components/Password";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
 import toast from "react-hot-toast";
-import Dropdown from "../../components/Dropdown";
 
 const CreateFarm = () => {
   const navigate = useNavigate();
