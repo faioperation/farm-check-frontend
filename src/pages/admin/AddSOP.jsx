@@ -114,7 +114,7 @@ const AddSOP = () => {
       formData.append("file", selectedFile);
       formData.append("source", "PDF_UPLOAD");
 
-      return await axiosSecure.post("/farm-admin/sops/upload-pdf", formData);
+      return await axiosSecure.post("/farm-admin/sops/create", formData);
     },
     onSuccess: () => {
       toast.success("SOP uploaded successfully");
