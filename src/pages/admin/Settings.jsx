@@ -32,27 +32,20 @@ const Settings = () => {
   }, [data]);
 
   // UPDATE SETTINGS
-const updateMutation = useMutation({
-  mutationFn: async () => {
-    return await axiosSecure.patch(
-      "/farm-admin/settings",
-      {
-        name: farmName
-      }
-    );
-  },
-  onSuccess: () => {
-    toast.success("Settings updated successfully");
-  },
-  onError: (error) => {
-    console.log(error.response?.data);
-    toast.error(
-      error.response?.data?.message ||
-      "Failed to update settings"
-    );
-  },
-});
-
+  const updateMutation = useMutation({
+    mutationFn: async () => {
+      return await axiosSecure.patch("/farm-admin/settings", {
+        name: farmName,
+      });
+    },
+    onSuccess: () => {
+      toast.success("Settings updated successfully");
+    },
+    onError: (error) => {
+      console.log(error.response?.data);
+      toast.error(error.response?.data?.message || "Failed to update settings");
+    },
+  });
 
   const handleSubmit = () => {
     if (!farmName) {
@@ -75,23 +68,11 @@ const updateMutation = useMutation({
         </p>
       </div>
 
-      {/* Logo Upload */}
-      {/* <div className="mt-6">
-        <UploadImage
-          label="Farm Logo"
-          branding="Farm"
-          value={logo}
-          onChange={(file) => setLogo(file)}
-        />
-      </div> */}
-
       {/* Farm Info */}
       <div className="bg-white rounded-lg border-2 border-[#E5E7EB] mt-6 p-6">
         <div className="flex items-center mb-4 gap-2">
           <HiOutlineOfficeBuilding className="w-6 h-6 text-[#4A5565]" />
-          <h2 className="text-xl text-[#0A0A0A]">
-            Farm Information
-          </h2>
+          <h2 className="text-xl text-[#0A0A0A]">Farm Information</h2>
         </div>
 
         <InputField
@@ -115,9 +96,7 @@ const updateMutation = useMutation({
           className="bg-[#F6A62D] text-white px-6 py-3 rounded-lg mt-9 flex items-center gap-2 hover:bg-[#e5942b] cursor-pointer"
         >
           <LuSave className="w-6 h-6" />
-          {updateMutation.isPending
-            ? "Saving..."
-            : "Save Changes"}
+          {updateMutation.isPending ? "Saving..." : "Save Changes"}
         </button>
       </div>
     </div>
