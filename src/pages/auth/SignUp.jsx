@@ -29,8 +29,9 @@ const SignUp = () => {
       return res.data;
     },
     onSuccess: () => {
-      toast.success("Account created successfully!");
-      navigate("/auth/login");
+      toast.success("Account created! Please verify your email.");
+      localStorage.setItem("pendingVerifyEmail", form.email);
+      navigate("/auth/verify/email");
     },
     onError: (error) => {
       toast.error(error.response?.data?.message || "Sign up failed!");

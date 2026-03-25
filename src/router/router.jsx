@@ -29,6 +29,7 @@ import ResetPassword from "../pages/auth/ResetPassword";
 import NewPassword from "../pages/auth/NewPassword";
 import Success from "../pages/auth/Success";
 import OTP from "../pages/auth/OTP";
+import VerifyEmail from "../pages/auth/VerifyEmail";
 import LandingPageLayout from "../layout/LandingPageLayout";
 import AboutUs from "../pages/landing/AboutUs";
 import PrivacyPolicy from "../pages/landing/PrivacyPolicy";
@@ -46,6 +47,7 @@ const router = createBrowserRouter([
       { path: "verify/otp", element: <OTP /> },
       { path: "new/password", element: <NewPassword /> },
       { path: "success", element: <Success /> },
+      { path: "verify/email", element: <VerifyEmail /> },
     ],
   },
 
