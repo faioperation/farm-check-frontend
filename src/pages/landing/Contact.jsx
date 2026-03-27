@@ -54,9 +54,9 @@ const Contact = () => {
                 <div className="flex items-start gap-6 group">
                   <FiMapPin className="w-6 h-6 text-white mt-1" />
                   <p className="text-white text-lg leading-relaxed">
-                    132 Dartmouth Street Boston,
+                    Molenhof 7, 5827 AR Vortum-Mullem,
                     <br />
-                    Massachusetts 02156 United States
+                    The Netherlands
                   </p>
                 </div>
               </div>
