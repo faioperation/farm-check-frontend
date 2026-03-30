@@ -35,6 +35,8 @@ import AboutUs from "../pages/landing/AboutUs";
 import PrivacyPolicy from "../pages/landing/PrivacyPolicy";
 import TermsService from "../pages/landing/TermsService";
 
+import SubscriptionGuard from "../components/SubscriptionGuard";
+
 const router = createBrowserRouter([
   //  AUTH ROUTES
   {
@@ -51,25 +53,30 @@ const router = createBrowserRouter([
     ],
   },
 
-  // ADMIN  DASHBOARD ROUTES
+  // ADMIN DASHBOARD ROUTES
   {
     path: "/admin",
     element: <DashboardLayout />,
     children: [
-      // admin
-      { path: "/admin/home", element: <Home /> },
-      { path: "/admin/sop/management", element: <SopManagement /> },
-      { path: "/admin/user/management", element: <UserManagement /> },
-      { path: "/admin/user/management/add/user", element: <AddUser /> },
-      { path: "/admin/user/management/edit/user/:id", element: <AddUser /> },
-      { path: "/admin/task/oversight", element: <TaskOversight /> },
-      { path: "/admin/sop/management/upload/sop", element: <AddSOP /> },
-      { path: "/admin/sop/management/edit/sop/:id", element: <AddSOP /> },
-      { path: "/admin/messaging/oversight", element: <Messaging /> },
-      { path: "/admin/farm/settings", element: <Settings /> },
+      // ✅ Subscription billing — always accessible (no subscription guard)
       { path: "/admin/subscription/billing", element: <Subscription /> },
 
-     
+      // 🔒 All other admin pages — require active subscription
+      {
+        element: <SubscriptionGuard />,
+        children: [
+          { path: "/admin/home", element: <Home /> },
+          { path: "/admin/sop/management", element: <SopManagement /> },
+          { path: "/admin/user/management", element: <UserManagement /> },
+          { path: "/admin/user/management/add/user", element: <AddUser /> },
+          { path: "/admin/user/management/edit/user/:id", element: <AddUser /> },
+          { path: "/admin/task/oversight", element: <TaskOversight /> },
+          { path: "/admin/sop/management/upload/sop", element: <AddSOP /> },
+          { path: "/admin/sop/management/edit/sop/:id", element: <AddSOP /> },
+          { path: "/admin/messaging/oversight", element: <Messaging /> },
+          { path: "/admin/farm/settings", element: <Settings /> },
+        ],
+      },
     ],
   },
 

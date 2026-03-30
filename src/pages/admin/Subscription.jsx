@@ -151,7 +151,7 @@ const Subscription = () => {
 
         <div className="bg-[#FFF6E9] w-max p-2">
           <p className="text-[#0A0A0A]">
-            Next renewal date : {currentPlan?.endDate.split("T")[0].split("-").reverse().join("-")}
+            Next renewal date : {currentPlan?.endDate?.split("T")[0].split("-").reverse().join("-") ?? "—"}
           </p>
         </div>
       </div>
