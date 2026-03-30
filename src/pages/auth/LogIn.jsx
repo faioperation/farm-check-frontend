@@ -57,7 +57,9 @@ const LogIn = () => {
 
 
       toast.success("Logged in successfully!");
-      console.log("Navigating now...");
+
+      // Flag so SubscriptionGuard skips toast on first redirect after login
+      sessionStorage.setItem("fresh_login", "1");
 
       // Redirect based on backend role
       setTimeout(() => {

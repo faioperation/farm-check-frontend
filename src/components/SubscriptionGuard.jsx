@@ -1,5 +1,7 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
+import { useRef } from "react";
+import toast from "react-hot-toast";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { BASE_URL } from "../config/api";
@@ -8,6 +10,7 @@ const SubscriptionGuard = () => {
   const userRole = Cookies.get("userRole");
   const token = Cookies.get("token");
   const isFarmAdmin = userRole === "FARM_ADMIN";
+  const toastShown = useRef(false);
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["subscriptionGuard"],
@@ -15,7 +18,6 @@ const SubscriptionGuard = () => {
       const res = await axios.get(`${BASE_URL}/farm-admin/subscription/current`, {
         headers: { authorization: `Bearer ${token}` },
       });
-      console.log("[SubscriptionGuard] subscription:", res.data.data);
       return res.data.data;
     },
     enabled: isFarmAdmin && !!token,
@@ -23,7 +25,7 @@ const SubscriptionGuard = () => {
     staleTime: 1000 * 60 * 5,
   });
 
-  // SYSTEM_OWNER — no guard
+  // SYSTEM_OWNER — no guard needed
   if (!isFarmAdmin) {
     return <Outlet />;
   }
@@ -37,9 +39,20 @@ const SubscriptionGuard = () => {
     );
   }
 
-  // Error fetching subscription or subscription not active → go to billing
+  // No active subscription → redirect to billing
+  // Skip toast on first redirect right after login
   if (isError || data?.status !== "ACTIVE") {
-    console.warn("[SubscriptionGuard] No active subscription, redirecting to billing.");
+    const isFreshLogin = sessionStorage.getItem("fresh_login") === "1";
+    if (isFreshLogin) {
+      // First redirect after login — clear flag, no toast
+      sessionStorage.removeItem("fresh_login");
+    } else if (!toastShown.current) {
+      // User manually tried to access a protected page
+      toastShown.current = true;
+      toast.error("Please upgrade your plan to access this page.", {
+        duration: 4000,
+      });
+    }
     return <Navigate to="/admin/subscription/billing" replace />;
   }
 
@@ -47,4 +60,3 @@ const SubscriptionGuard = () => {
 };
 
 export default SubscriptionGuard;
-
