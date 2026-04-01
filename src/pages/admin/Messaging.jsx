@@ -68,7 +68,7 @@ const Messaging = () => {
       const data = res.data?.data || {};
       return {
         total: data.totalMessages || 0, // guessing field name or defaulting
-        unread: data.unreadMessages || 0, // guessing field name or defaulting
+        unread: data.unreadMessagesCount || 0, // guessing field name or defaulting
         enabled: data.isMessagingEnabled !== undefined ? data.isMessagingEnabled : true,
       };
     },
@@ -132,7 +132,7 @@ const Messaging = () => {
   });
 
   const totalMessages = stats?.total || 0;
-  const unreadCount = stats?.unread || 0;
+  const unreadMessagesCount = stats?.unread || 0;
   const enabled = stats?.enabled ?? true;
 
   return (
@@ -182,7 +182,7 @@ const Messaging = () => {
               <div className=" p-6 bg-white rounded-lg border-2 border-[#E5E7EB] col-span-12 md:col-span-4">
                 <p className="text-sm text-gray-500">Unread Messages</p>
                 <p className="text-2xl text-[#F54900] font-semibold mt-1">
-                  {unreadCount}
+                  {unreadMessagesCount}
                 </p>
               </div>
 
