@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Breadcrumb from "../../components/Bredcumb";
 import Table from "../../components/Table";
 import { FaSearch } from "react-icons/fa";
@@ -10,39 +10,73 @@ const TaskOversight = () => {
   const axiosSecure = useAxiosSecure();
 
   const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
+  const debounceRef = useRef(null);
 
-  //  FETCH TASKS
-  const { data, isLoading } = useQuery({
-    queryKey: ["oversightTasks", currentPage],
+  // Debounce: API call only fires 400ms after user stops typing
+  useEffect(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      setDebouncedSearch(search);
+      setCurrentPage(1);
+    }, 400);
+    return () => clearTimeout(debounceRef.current);
+  }, [search]);
+
+  // FETCH TASKS (server-side search + pagination)
+  const { data, isLoading, isFetching } = useQuery({
+    queryKey: ["oversightTasks", currentPage, debouncedSearch],
     queryFn: async () => {
+      const params = new URLSearchParams({
+        page: currentPage,
+        limit: itemsPerPage,
+      });
+      if (debouncedSearch.trim()) params.set("search", debouncedSearch.trim());
+
       const res = await axiosSecure.get(
-        `/farm-admin/oversight/tasks?page=${currentPage}&limit=${itemsPerPage}`
+        `/farm-admin/oversight/tasks?${params.toString()}`
       );
       return res.data.data;
     },
     keepPreviousData: true,
   });
 
+  // FETCH OVERALL STATS (all tasks, no page/search filter)
+  const { data: statsData } = useQuery({
+    queryKey: ["oversightTaskStats"],
+    queryFn: async () => {
+      const res = await axiosSecure.get(
+        `/farm-admin/oversight/tasks?page=1&limit=9999`
+      );
+      const all = res.data.data?.tasks || [];
+      const meta = res.data.data?.meta || {};
+      return {
+        total: meta.total || all.length,
+        pending: all.filter((t) => t.status === "PENDING").length,
+        completed: all.filter((t) => t.status === "COMPLETED").length,
+        inProgress: all.filter((t) => t.status === "IN_PROGRESS").length,
+      };
+    },
+  });
+
   const tasks = data?.tasks || [];
   const totalTasks = data?.meta?.total || 0;
 
-  //    FILTER (frontend side search)
-  const filteredData = tasks.filter(
-    (t) =>
-      t.title?.toLowerCase().includes(search.toLowerCase()) ||
-      t.assignedTo?.name?.toLowerCase().includes(search.toLowerCase())
-  );
+  // Handle search input (debounce handles the rest)
+  const handleSearch = (e) => {
+    setSearch(e.target.value);
+  };
 
-  //   Status style helper
+  // Status style helper
   const statusStyle = {
     COMPLETED: "bg-[#DCFCE7] text-[#008236]",
     PENDING: "bg-[#FFEDD4] text-[#CA3500]",
     IN_PROGRESS: "bg-blue-100 text-blue-600",
   };
 
-  //   TableHeads
+  // TableHeads
   const TableHeads = [
     {
       Title: "Task",
@@ -89,16 +123,13 @@ const TaskOversight = () => {
       Title: "Created",
       key: "createdAt",
       width: "15%",
-      render: (row) =>
-        new Date(row.createdAt).toISOString().split("T")[0],
+      render: (row) => new Date(row.createdAt).toISOString().split("T")[0],
     },
   ];
 
   const totalPages = Math.ceil(totalTasks / itemsPerPage);
 
-  if (isLoading) {
-    return <div className="p-10">Loading tasks...</div>;
-  }
+
 
   return (
     <div>
@@ -110,31 +141,33 @@ const TaskOversight = () => {
         </p>
       </div>
 
-      {/* Stats */}
+      {/* Stats — overall, not page-specific */}
       <div className="grid grid-cols-12 gap-6 mt-6">
         <div className="col-span-6 md:col-span-3 bg-white p-6 rounded-lg border-2 border-[#E5E7EB]">
           <p className="text-[#4A5565]">Total Tasks</p>
-          <p className="text-xl font-semibold text-[#0A0A0A] mt-1">{totalTasks}</p>
+          <p className="text-xl font-semibold text-[#0A0A0A] mt-1">
+            {statsData?.total ?? "—"}
+          </p>
         </div>
-
 
         <div className="col-span-6 md:col-span-3 bg-white p-6 rounded-lg border-2 border-[#E5E7EB]">
           <p className="text-[#4A5565]">Pending</p>
           <p className="text-xl font-semibold text-[#F54900] mt-1">
-            {tasks.filter((t) => t.status === "PENDING").length}
+            {statsData?.pending ?? "—"}
           </p>
         </div>
 
         <div className="col-span-6 md:col-span-3 bg-white p-6 rounded-lg border-2 border-[#E5E7EB]">
           <p className="text-[#4A5565]">Completed</p>
           <p className="text-xl font-semibold text-[#00A63E] mt-1">
-            {tasks.filter((t) => t.status === "COMPLETED").length}
+            {statsData?.completed ?? "—"}
           </p>
         </div>
+
         <div className="col-span-6 md:col-span-3 bg-white p-6 rounded-lg border-2 border-[#E5E7EB]">
           <p className="text-[#4A5565]">In Progress</p>
           <p className="text-xl font-semibold text-[#155DFC] mt-1">
-            {tasks.filter((t) => t.status === "IN_PROGRESS").length}
+            {statsData?.inProgress ?? "—"}
           </p>
         </div>
 
@@ -145,14 +178,24 @@ const TaskOversight = () => {
             type="text"
             placeholder="Search task..."
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={handleSearch}
             className="w-full pl-10 p-4 border border-[#D1D5DC] rounded-md outline-none text-[#99A1AF] placeholder:text-[#99A1AF]"
           />
+          {/* Subtle loading indicator while fetching */}
+          {isFetching && (
+            <div className="absolute top-1/2 -translate-y-1/2 right-4">
+              <div className="w-4 h-4 border-2 border-[#F6A62D] border-t-transparent rounded-full animate-spin" />
+            </div>
+          )}
         </div>
 
         {/* Table */}
-        <div className="col-span-12 bg-white rounded-lg border-2 border-[#E5E7EB] overflow-x-scroll md:overflow-hidden">
-          <Table TableHeads={TableHeads} TableRows={filteredData} />
+        <div className={`col-span-12 bg-white rounded-lg border-2 border-[#E5E7EB] overflow-x-scroll md:overflow-hidden relative`}>
+          {isLoading ? (
+            <div className="py-16 text-center text-gray-400">Loading tasks...</div>
+          ) : (
+            <Table TableHeads={TableHeads} TableRows={tasks} />
+          )}
         </div>
       </div>
 
