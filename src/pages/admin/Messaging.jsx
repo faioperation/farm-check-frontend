@@ -118,14 +118,45 @@ const Messaging = () => {
   // ================= MARK AS READ =================
   const markAsReadMutation = useMutation({
     mutationFn: async (id) => {
-      // Trying standard REST partial update
       return await axiosSecure.patch(
         `/farm-admin/messages/oversight/${id}`,
         { isRead: true }
       );
     },
-    onSuccess: () => {
-      // Invalidate to update unread count and message highlighting
+    onMutate: async (id) => {
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries(["oversightMessages"]);
+      await queryClient.cancelQueries(["messageStats"]);
+
+      // Snapshot previous values
+      const prevMessages = queryClient.getQueryData(["oversightMessages"]);
+      const prevStats = queryClient.getQueryData(["messageStats"]);
+
+      // Optimistically update messages list
+      queryClient.setQueryData(["oversightMessages"], (old = []) =>
+        old.map((msg) => (msg.id === id ? { ...msg, unread: false } : msg))
+      );
+
+      // Optimistically update unread count
+      queryClient.setQueryData(["messageStats"], (old) => {
+        if (!old) return old;
+        return { ...old, unread: Math.max(0, (old.unread || 1) - 1) };
+      });
+
+      return { prevMessages, prevStats };
+    },
+    onError: (_err, _id, context) => {
+      // Rollback on error
+      if (context?.prevMessages) {
+        queryClient.setQueryData(["oversightMessages"], context.prevMessages);
+      }
+      if (context?.prevStats) {
+        queryClient.setQueryData(["messageStats"], context.prevStats);
+      }
+      toast.error("Failed to mark as read");
+    },
+    onSettled: () => {
+      // Sync with server after mutation
       queryClient.invalidateQueries(["oversightMessages"]);
       queryClient.invalidateQueries(["messageStats"]);
     },

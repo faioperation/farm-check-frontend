@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { AiFillPicture, AiOutlineFile } from "react-icons/ai";
-import { FaFileDownload } from "react-icons/fa";
+import { FaArrowRight, FaFileDownload } from "react-icons/fa";
 import { FaSearch } from "react-icons/fa";
 import { FaArrowLeft } from "react-icons/fa6";
-import { FiMessageSquare, FiX } from "react-icons/fi";
+import { FiMessageSquare, FiTrash2, FiX } from "react-icons/fi";
 import { IoSend } from "react-icons/io5";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
@@ -36,6 +36,15 @@ export default function Inbox() {
   const [imagePreview, setImagePreview] = useState(null);
   const [search, setSearch] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
+
+  // Contact search state
+  const [contactResults, setContactResults] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [selectedContact, setSelectedContact] = useState(null); // contact from search
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const searchRef = useRef(null);
+  const debounceRef = useRef(null);
 
   // Ref for the bottom of the message list
   const messagesEndRef = useRef(null);
@@ -257,13 +266,93 @@ export default function Inbox() {
     },
   });
 
-  const selectedConversation = conversations.find(
-    (c) => c.id === selectedId
-  );
+  // =========================
+  //    CLEAR CHAT HISTORY
+  // =========================
+  const clearHistoryMutation = useMutation({
+    mutationFn: async (userId) => {
+      return await axiosSecure.delete(`/farm-admin/messages/history/${userId}`);
+    },
+    onSuccess: () => {
+      queryClient.setQueryData(["conversationMessages", selectedId], []);
+      queryClient.invalidateQueries(["inboxConversations"]);
+      toast.success("Chat history cleared");
+    },
+    onError: () => {
+      toast.error("Failed to clear chat history");
+    },
+  });
 
-  const filteredConversations = conversations.filter((c) =>
-    c.name.toLowerCase().includes(search.toLowerCase())
-  );
+
+  const selectedConversation =
+    conversations.find((c) => c.id === selectedId) ||
+    // Fallback: if contact was picked from search but no existing conversation yet
+    (selectedId && selectedContact?.id === selectedId
+      ? {
+          id: selectedContact.id,
+          name: selectedContact.name,
+          role: selectedContact.role || selectedContact.jobTitle || "",
+          avatar: selectedContact.name?.charAt(0),
+          unread: false,
+          lastMessage: null,
+          lastMessageAt: null,
+        }
+      : null);
+
+  const filteredConversations = search.trim()
+    ? conversations.filter((c) =>
+        c.name.toLowerCase().includes(search.toLowerCase())
+      )
+    : conversations;
+
+  // Debounced contact search
+  const handleSearchChange = (e) => {
+    const value = e.target.value;
+    setSearch(value);
+
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+
+    if (!value.trim()) {
+      setContactResults([]);
+      setShowDropdown(false);
+      setIsSearching(false);
+      return;
+    }
+
+    setIsSearching(true);
+    debounceRef.current = setTimeout(async () => {
+      try {
+        const res = await axiosSecure.get(`/farm-admin/messages/contacts?search=${encodeURIComponent(value.trim())}`);
+        const results = res.data?.data || [];
+        setContactResults(results);
+        setShowDropdown(true);
+      } catch (err) {
+        console.error("Contact search error:", err);
+        setContactResults([]);
+      } finally {
+        setIsSearching(false);
+      }
+    }, 400);
+  };
+
+  const handleContactSelect = (contact) => {
+    setShowDropdown(false);
+    setSearch("");
+    setContactResults([]);
+    setSelectedContact(contact); // store contact info as fallback
+    setSelectedId(contact.id);
+  };
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handleOutside = (e) => {
+      if (searchRef.current && !searchRef.current.contains(e.target)) {
+        setShowDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handleOutside);
+    return () => document.removeEventListener("mousedown", handleOutside);
+  }, []);
 
   // ===============================
   //    INBOX VIEW (DESIGN UNCHANGED)
@@ -271,15 +360,61 @@ export default function Inbox() {
   if (!selectedConversation) {
     return (
       <>
-        <div className="relative  mb-6 bg-white rounded-lg border-2 border-[#E5E7EB] p-6">
+        <div className="relative mb-6 bg-white rounded-lg border-2 border-[#E5E7EB] p-6" ref={searchRef}>
           <FaSearch className="absolute top-1/2 -translate-y-1/2 left-10 text-[#99A1AF]" />
+          {isSearching && (
+            <div className="absolute top-1/2 -translate-y-1/2 right-10">
+              <div className="w-4 h-4 border-2 border-[#F6A62D] border-t-transparent rounded-full animate-spin" />
+            </div>
+          )}
           <input
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={handleSearchChange}
+            onFocus={() => contactResults.length > 0 && setShowDropdown(true)}
             type="text"
-            placeholder="Search conversation..."
+            placeholder="Search contacts..."
             className="w-full pl-10 p-4 border border-[#D1D5DC] rounded-md outline-none text-[#0A0A0A]/50 placeholder:text-[#0A0A0A]/50"
           />
+
+          {/* Contact Search Dropdown */}
+          {showDropdown && (
+            <div className="absolute left-0 right-0 top-full mt-1 bg-white border border-[#E5E7EB] rounded-lg shadow-lg z-50 max-h-64 overflow-y-auto">
+              {contactResults.length === 0 ? (
+                <div className="px-4 py-3 text-sm text-gray-400 text-center">No contacts found</div>
+              ) : (
+                contactResults.map((contact) => (
+                  <div
+                    key={contact.id}
+                    onClick={() => handleContactSelect(contact)}
+                    className="flex items-center gap-3 px-4 py-3 hover:bg-orange-50 cursor-pointer border-b border-[#F3F4F6] last:border-b-0 transition-colors"
+                  >
+                    {contact.avatarUrl ? (
+                      <img
+                        src={contact.avatarUrl}
+                        alt={contact.name}
+                        className="w-9 h-9 rounded-full object-cover flex-shrink-0"
+                        onError={(e) => {
+                          e.target.style.display = "none";
+                          e.target.nextSibling.style.display = "flex";
+                        }}
+                      />
+                    ) : null}
+                    <div
+                      className="w-9 h-9 rounded-full bg-blue-600 text-white flex items-center justify-center font-semibold text-sm flex-shrink-0"
+                      style={{ display: contact.avatarUrl ? "none" : "flex" }}
+                    >
+                      {contact.name?.charAt(0)}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-[#0A0A0A] truncate">{contact.name}</p>
+                      <p className="text-xs text-gray-400 truncate">{contact.jobTitle || contact.role}</p>
+                    </div>
+                    <span className="text-xs text-[#F6A62D] font-medium flex items-center gap-1">Message <FaArrowRight/></span>
+                  </div>
+                ))
+              )}
+            </div>
+          )}
         </div>
 
         <div className="bg-white border rounded-lg">
@@ -287,7 +422,7 @@ export default function Inbox() {
             <div className="flex items-center gap-2">
                  {/* Connection Status Dot */}
                  <div 
-                    className={`w-3 h-3 rounded-full ${socket?.readyState === 1 ? "bg-green-500" : "bg-red-500"}`} 
+                    // className={`w-3 h-3 rounded-full ${socket?.readyState === 1 ? "bg-green-500" : "bg-red-500"}`} 
                     title={socket?.readyState === 1 ? "Connected" : (error || "Disconnected")}
                  />
                  {/* Debug Error Message (Visible on Hover or if Error) */}
@@ -317,7 +452,10 @@ export default function Inbox() {
 
                 <div className="flex-1">
                   <div className="flex justify-between">
-                    <p className="font-medium text-[#0A0A0A]">{c.name}</p>
+                    <div className="flex items-center gap-2">
+                      <p className="font-medium text-[#0A0A0A]">{c.name}</p>
+                    <p className="text-gray-400 text-sm">{c.role}</p>
+                    </div>
                     <span className="text-sm text-gray-400">
                       {new Date(c.lastMessageAt).toLocaleString()}
                     </span>
@@ -341,6 +479,7 @@ export default function Inbox() {
   // 💬 CONVERSATION VIEW (DESIGN UNCHANGED)
   // ===============================
   return (
+    <>
     <div className="flex flex-col  rounded-lg h-[740px]">
       <div className="flex items-center gap-3 px-4 py-5 border-b bg-white">
         <button
@@ -362,6 +501,16 @@ export default function Inbox() {
             {selectedConversation.role}
           </p>
         </div>
+
+        {/* Delete / Clear History Button */}
+        <button
+          onClick={() => setShowDeleteModal(true)}
+          disabled={clearHistoryMutation.isPending}
+          title="Clear chat history"
+          className="ml-auto text-red-400 hover:text-red-600 transition-colors disabled:opacity-50 cursor-pointer"
+        >
+          <FiTrash2 className="w-5 h-5" />
+        </button>
       </div>
 
       <div className="flex-1 p-4 space-y-4 overflow-y-auto hide-scrollbar">
@@ -501,5 +650,50 @@ export default function Inbox() {
         </div>
       )}
     </div>
+
+      {/* ===== DELETE CONFIRM MODAL ===== */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm mx-4 overflow-hidden">
+            {/* Top red bar */}
+            <div className="bg-[#F6A62D] px-6 py-4 flex items-center gap-3">
+              <div className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center">
+                <FiTrash2 className="w-5 h-5 text-white" />
+              </div>
+              <h3 className="text-white font-semibold text-lg">Clear Chat History</h3>
+            </div>
+
+            {/* Body */}
+            <div className="px-6 py-5">
+              <p className="text-[#374151] text-sm ">
+                Are you sure you want to clear all chat history with{" "}
+                <span className="font-semibold text-[#0A0A0A]">{selectedConversation.name}</span>?
+              </p>
+              <p className="text-xs text-gray-400 mt-1">This action cannot be undone.</p>
+            </div>
+
+            {/* Actions */}
+            <div className="flex gap-3 px-6 pb-6">
+              <button
+                onClick={() => setShowDeleteModal(false)}
+                className="flex-1 py-2.5 rounded-lg border border-[#D1D5DC] text-[#374151] text-sm font-medium hover:bg-gray-50 transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  clearHistoryMutation.mutate(selectedId);
+                  setShowDeleteModal(false);
+                }}
+                disabled={clearHistoryMutation.isPending}
+                className="flex-1 py-2.5 rounded-lg bg-[#F6A62D] hover:bg-[#F6A62D]/80 text-white text-sm font-medium transition-colors disabled:opacity-60 cursor-pointer"
+              >
+                {clearHistoryMutation.isPending ? "Clearing..." : "Yes, Clear"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
