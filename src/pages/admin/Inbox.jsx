@@ -109,7 +109,7 @@ export default function Inbox() {
           id: item.userId,
           name: item.name,
           role: item.role || "User",
-          avatar: item.name?.charAt(0),
+          avatarUrl: item.avatarUrl || null,
           unread: item.unreadCount > 0,
           lastMessage: item.lastMessage,
           lastMessageAt: item.lastMessageAt,
@@ -292,7 +292,7 @@ export default function Inbox() {
           id: selectedContact.id,
           name: selectedContact.name,
           role: selectedContact.role || selectedContact.jobTitle || "",
-          avatar: selectedContact.name?.charAt(0),
+          avatarUrl: selectedContact.avatarUrl,
           unread: false,
           lastMessage: null,
           lastMessageAt: null,
@@ -446,8 +446,12 @@ export default function Inbox() {
                   }
                 `}
               >
-                <div className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-semibold">
-                  {c.avatar}
+                <div className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-semibold flex-shrink-0 overflow-hidden">
+                  {c.avatarUrl ? (
+                    <img src={c.avatarUrl} alt={c.name} className="w-full h-full object-cover" onError={(e) => { e.target.style.display = "none"; e.target.parentElement.textContent = c.name?.charAt(0); }} />
+                  ) : (
+                    c.name?.charAt(0)
+                  )}
                 </div>
 
                 <div className="flex-1">
@@ -489,8 +493,12 @@ export default function Inbox() {
           <FaArrowLeft />
         </button>
 
-        <div className="w-9 h-9 rounded-full bg-blue-600 text-white flex items-center justify-center font-semibold">
-          {selectedConversation.avatar}
+        <div className="w-9 h-9 rounded-full bg-blue-600 text-white flex items-center justify-center font-semibold overflow-hidden flex-shrink-0">
+          {selectedConversation.avatarUrl ? (
+            <img src={selectedConversation.avatarUrl} alt={selectedConversation.name} className="w-full h-full object-cover" onError={(e) => { e.target.style.display = "none"; e.target.parentElement.textContent = selectedConversation.name?.charAt(0); }} />
+          ) : (
+            selectedConversation.name?.charAt(0)
+          )}
         </div>
 
         <div className="flex-1">

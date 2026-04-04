@@ -119,8 +119,7 @@ const Messaging = () => {
   const markAsReadMutation = useMutation({
     mutationFn: async (id) => {
       return await axiosSecure.patch(
-        `/farm-admin/messages/oversight/${id}`,
-        { isRead: true }
+        `/farm-admin/messages/oversight/${id}/read`
       );
     },
     onMutate: async (id) => {
