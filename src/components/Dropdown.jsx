@@ -73,8 +73,8 @@ const Dropdown = ({
         <div
           className={`absolute left-0 top-[105%] w-full bg-white  border border-[#D1D5DC] rounded-md shadow-md  text-[#000000] z-30 transition-all duration-300 text-center overflow-y-scroll hide-scrollbar  ${optionClass} ${
             show
-              ? "opacity-100 visible max-h-40 overflow-auto"
-              : "opacity-0 invisible max-h-0 overflow-hidden"
+              ? "opacity-100 visible max-h-60 "
+              : "opacity-0 invisible max-h-0 "
           }`}
         >
           {options.map((item, index) => (
