@@ -23,11 +23,11 @@ const PrivacyPolicy = () => {
         <div className="flex items-center gap-2 sm:gap-6">
           <span className="flex items-center gap-1">
             <MdOutlineEmail className="w-4 h-4" />
-            <span className="hidden md:inline">demo@gmail.com</span>
+            <span className="hidden md:inline">farmchecksupport@gmail.com</span>
           </span>
           <span className="flex items-center gap-1">
             <MdOutlinePhone className="w-4 h-4" />
-            <span className="hidden md:inline">+1 707-699-6478</span>
+            <span className="hidden md:inline">+31625281836</span>
           </span>
         </div>
       </div>
@@ -36,30 +36,70 @@ const PrivacyPolicy = () => {
       <div className="w-full px-4 sm:px-8 lg:px-16 pt-8 pb-16">
         <h1 className="text-3xl sm:text-4xl lg:text-6xl font-bold text-[#1A1A1A] mb-6 sm:mb-8">Privacy Policy</h1>
 
-        <div className="space-y-4 sm:space-y-5 text-[#364153] text-base sm:text-lg lg:text-3xl leading-relaxed">
-          <p>FarmCheck values your privacy.</p>
+        <div className="space-y-6 sm:space-y-8 text-[#364153] text-base sm:text-lg lg:text-xl leading-relaxed">
+          <p>Farm Check values your privacy.</p>
 
           <p>
-            The FarmCheck app processes personal data solely to provide and operate the service.
-            This may include account information (such as name and email address), operational
-            usage data related to SOP execution, and technical information required for app
-            functionality.
+            Farm Check is a Software-as-a-Service (SaaS) platform designed for farm administrators, managers, and employees to manage daily operations efficiently. The app is intended for authorized users within an organization.
           </p>
 
-          <p>
-            Personal data is used only for account management, service delivery, and improving the
-            platform. Data is not sold or shared with third parties, except where required for hosting
-            and technical operation of the app.
-          </p>
+          <div className="space-y-2">
+            <h2 className="font-bold text-[#1A1A1A]">Account & Access:</h2>
+            <p>
+              User accounts are created and managed by the farm administrator through a centralized dashboard. Only authorized managers and employees can access the app. Administrators have full control to create, manage, and delete user accounts at any time.
+            </p>
+          </div>
 
-          <p>
-            Users have the right to access, correct, or request deletion of their personal data at any
-            time.
-          </p>
+          <div className="space-y-2">
+            <h2 className="font-bold text-[#1A1A1A]">Data Collection:</h2>
+            <p>We collect only the information necessary to operate the service, which may include:</p>
+            <ul className="list-disc pl-6 sm:pl-8 space-y-1">
+              <li>User account information (such as name and email address)</li>
+              <li>Operational data related to tasks, SOP execution, and workflow activities</li>
+              <li>Messages and content shared within the in-app chat system</li>
+              <li>Technical data required for app functionality and performance</li>
+            </ul>
+          </div>
 
-          <p>For privacy-related questions or requests, please contact:</p>
+          <div className="space-y-2">
+            <h2 className="font-bold text-[#1A1A1A]">Usage of Data:</h2>
+            <p>All collected data is used strictly for:</p>
+            <ul className="list-disc pl-6 sm:pl-8 space-y-1">
+              <li>Providing and maintaining the service</li>
+              <li>Managing user accounts and roles</li>
+              <li>Enabling communication between team members (chat feature)</li>
+              <li>Improving app performance and user experience</li>
+            </ul>
+          </div>
 
-          <p className="font-medium text-[#1A1A1A]">Farmchecksupport@gmail.com</p>
+          <div className="space-y-2">
+            <h2 className="font-bold text-[#1A1A1A]">Data Sharing:</h2>
+            <p>
+              We do not sell or share personal data with third parties. Data may only be processed by trusted infrastructure providers strictly for hosting and technical operation purposes.
+            </p>
+          </div>
+
+          <div className="space-y-2">
+            <h2 className="font-bold text-[#1A1A1A]">User Control:</h2>
+            <p>
+              Since this is an organization-based system, individual users cannot self-register. All accounts are controlled by the organization’s administrator, who can update or delete user data upon request.
+            </p>
+          </div>
+
+          <div className="space-y-2">
+            <h2 className="font-bold text-[#1A1A1A]">Data Security:</h2>
+            <p>
+              We implement appropriate technical and organizational measures to protect user data and ensure secure access.
+            </p>
+          </div>
+
+          <div className="space-y-2">
+            <h2 className="font-bold text-[#1A1A1A]">Contact:</h2>
+            <p>For any privacy-related questions or requests, please contact:</p>
+            <p className="font-medium text-[#1A1A1A] hover:underline cursor-pointer">
+              <a href="mailto:farmchecksupport@gmail.com">farmchecksupport@gmail.com</a>
+            </p>
+          </div>
         </div>
       </div>
 
