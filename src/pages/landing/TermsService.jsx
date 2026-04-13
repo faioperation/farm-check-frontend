@@ -23,7 +23,7 @@ const TermsService = () => {
         <div className="flex items-center gap-2 sm:gap-6">
           <span className="flex items-center gap-1">
             <MdOutlineEmail className="w-4 h-4" />
-            <span className="hidden md:inline">farmchecksupport@gmail.com</span>
+            <span className="hidden md:inline">farmcheck.app@gmail.com</span>
           </span>
           <span className="flex items-center gap-1">
             <MdOutlinePhone className="w-4 h-4" />

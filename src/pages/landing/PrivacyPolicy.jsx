@@ -23,7 +23,7 @@ const PrivacyPolicy = () => {
         <div className="flex items-center gap-2 sm:gap-6">
           <span className="flex items-center gap-1">
             <MdOutlineEmail className="w-4 h-4" />
-            <span className="hidden md:inline">farmchecksupport@gmail.com</span>
+            <span className="hidden md:inline">farmcheck.app@gmail.com</span>
           </span>
           <span className="flex items-center gap-1">
             <MdOutlinePhone className="w-4 h-4" />
@@ -97,7 +97,7 @@ const PrivacyPolicy = () => {
             <h2 className="font-bold text-[#1A1A1A]">Contact:</h2>
             <p>For any privacy-related questions or requests, please contact:</p>
             <p className="font-medium text-[#1A1A1A] hover:underline cursor-pointer">
-              <a href="mailto:farmchecksupport@gmail.com">farmchecksupport@gmail.com</a>
+              <a href="mailto:farmcheck.app@gmail.com">farmcheck.app@gmail.com</a>
             </p>
           </div>
         </div>
