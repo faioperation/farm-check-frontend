@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Container from "../Container";
 import { FiX, FiMenu } from "react-icons/fi";
 import { Link, useNavigate, useLocation } from "react-router-dom";
@@ -17,8 +17,38 @@ const navitems = [
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState("home");
   const navigate = useNavigate();
   const location = useLocation();
+
+  useEffect(() => {
+    if (location.pathname !== "/") return;
+
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY + 200; // Offset for navbar
+
+      navitems.forEach((item) => {
+        if (!item.isRoute) {
+          const section = document.getElementById(item.href);
+          if (section) {
+            const sectionTop = section.offsetTop;
+            const sectionHeight = section.offsetHeight;
+
+            if (
+              scrollPosition >= sectionTop &&
+              scrollPosition < sectionTop + sectionHeight
+            ) {
+              setActiveSection(item.href);
+            }
+          }
+        }
+      });
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    handleScroll(); // Initial check
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [location.pathname]);
 
   const scrollToSection = (id, closeMenu = false) => {
     const doScroll = () => {
@@ -72,14 +102,22 @@ const Navbar = () => {
                 {item.isRoute ? (
                   <Link
                     to={item.href}
-                    className="py-2 px-4 font-inter text-lg font-medium text-slate-600 hover:text-[#F6A62D] transition-colors rounded-lg"
+                    className={`py-2 px-4 font-inter text-lg font-medium transition-colors rounded-lg ${
+                      location.pathname === item.href
+                        ? "text-[#F6A62D] "
+                        : "text-slate-600 hover:text-[#F6A62D]"
+                    }`}
                   >
                     {item.name}
                   </Link>
                 ) : (
                   <button
                     onClick={() => scrollToSection(item.href)}
-                    className="py-2 px-4 font-inter text-lg font-medium text-slate-600 hover:text-[#F6A62D] transition-colors rounded-lg cursor-pointer"
+                    className={`py-2 px-4 font-inter text-lg font-medium transition-colors rounded-lg cursor-pointer ${
+                      activeSection === item.href
+                        ? "text-[#F6A62D] "
+                        : "text-slate-600 hover:text-[#F6A62D]"
+                    }`}
                   >
                     {item.name}
                   </button>
@@ -123,14 +161,22 @@ const Navbar = () => {
                       <Link
                         to={item.href}
                         onClick={() => setOpen(false)}
-                        className="py-3 px-4 font-inter text-lg font-medium text-slate-700 hover:bg-orange-50 hover:text-[#F6A62D] block rounded-xl transition-all"
+                        className={`py-3 px-4 font-inter text-lg font-medium block rounded-xl transition-all ${
+                          location.pathname === item.href
+                            ? "text-[#F6A62D] bg-orange-50"
+                            : "text-slate-700 hover:bg-orange-50 hover:text-[#F6A62D]"
+                        }`}
                       >
                         {item.name}
                       </Link>
                     ) : (
                       <button
                         onClick={() => scrollToSection(item.href, true)}
-                        className="py-3 px-4 font-inter text-lg font-medium text-slate-700 hover:bg-orange-50 hover:text-[#F6A62D] block rounded-xl transition-all w-full text-left"
+                        className={`py-3 px-4 font-inter text-lg font-medium block rounded-xl transition-all w-full text-left ${
+                          activeSection === item.href
+                            ? "text-[#F6A62D] bg-orange-50"
+                            : "text-slate-700 hover:bg-orange-50 hover:text-[#F6A62D]"
+                        }`}
                       >
                         {item.name}
                       </button>
