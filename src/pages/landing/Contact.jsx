@@ -1,10 +1,40 @@
-import React from "react";
+import React, { useRef, useState } from "react";
 import Container from "../../components/Container";
 import InputField from "../../components/InputField";
 import { motion } from "framer-motion";
 import { FiPhone, FiMail, FiMapPin } from "react-icons/fi";
+import emailjs from '@emailjs/browser';
+import toast from 'react-hot-toast';
 
 const Contact = () => {
+  const formRef = useRef();
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    // Replace these with your actual EmailJS credentials
+    const serviceId = "service_zoux3ru";
+    const templateId = "template_bup4wlv";
+    const publicKey = "M-TrnCB_xCVsTnsX8";
+
+    emailjs
+      .sendForm(serviceId, templateId, formRef.current, publicKey)
+      .then(
+        (result) => {
+          toast.success("Message sent successfully!");
+          setLoading(false);
+          e.target.reset(); // Reset form fields
+        },
+        (error) => {
+          toast.error("Failed to send the message, please try again.");
+          setLoading(false);
+          console.error(error);
+        }
+      );
+  };
+
   return (
     <div id="contact" className="py-24 bg-white overflow-hidden">
       <Container>
@@ -71,7 +101,7 @@ const Contact = () => {
             transition={{ duration: 0.6 }}
             className="lg:w-[62%] bg-white p-10 md:p-16 lg:p-20"
           >
-            <form className="space-y-10" onSubmit={(e) => e.preventDefault()}>
+            <form ref={formRef} className="space-y-10" onSubmit={handleSubmit}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                 <InputField
                   label={
@@ -79,8 +109,10 @@ const Contact = () => {
                       Name<span className="text-red-500 ml-1">*</span>
                     </span>
                   }
+                  name="user_name"
                   placeholder="Enter your name"
                   inputClass="rounded-xl border-[#E5E7EB] focus:border-[#F6A62D] py-5 px-6 transition-all"
+                  required
                 />
                 <InputField
                   label={
@@ -88,9 +120,11 @@ const Contact = () => {
                       Email<span className="text-red-500 ml-1">*</span>
                     </span>
                   }
+                  name="user_email"
                   placeholder="Enter your email"
                   type="email"
                   inputClass="rounded-xl border-[#E5E7EB] focus:border-[#F6A62D] py-5 px-6 transition-all"
+                  required
                 />
               </div>
 
@@ -99,8 +133,10 @@ const Contact = () => {
                   Message
                 </label>
                 <textarea
+                  name="message"
                   placeholder="Write your message..."
                   className="border border-[#E5E7EB] outline-none p-5 text-[#364153] placeholder:text-[#0A0A0A]/30 rounded-xl min-h-[180px] focus:border-[#F6A62D] transition-all resize-none"
+                  required
                 ></textarea>
               </div>
 
@@ -109,9 +145,10 @@ const Contact = () => {
                   whileHover={{ scale: 1.02, backgroundColor: "#e5942b" }}
                   whileTap={{ scale: 0.98 }}
                   type="submit"
-                  className="bg-[#F6A62D] text-white font-bold py-5 px-16 rounded-xl transition-all duration-300 shadow-xl shadow-orange-500/20 w-full md:w-auto text-lg"
+                  disabled={loading}
+                  className="bg-[#F6A62D] text-white font-bold py-5 px-16 rounded-xl transition-all duration-300 shadow-xl shadow-orange-500/20 w-full md:w-auto text-lg disabled:opacity-70 disabled:cursor-not-allowed"
                 >
-                  Send Message
+                  {loading ? "Sending..." : "Send Message"}
                 </motion.button>
               </div>
             </form>
