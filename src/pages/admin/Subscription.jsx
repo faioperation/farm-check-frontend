@@ -135,7 +135,7 @@ const Subscription = () => {
   ];
 
   if (isLoading) {
-    return <div className="p-10">Loading subscription...</div>;
+    return <div className="p-10">Loading Subscription...</div>;
   }
 
   return (
