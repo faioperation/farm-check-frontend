@@ -31,8 +31,8 @@ const Home = () => {
 
   if (isError || !data) {
     return (
-      <div className="p-10 text-red-500">
-        Failed to load dashboard
+      <div className="p-10 text-[#4A5565]">
+        Loading dashboard data...
       </div>
     );
   }

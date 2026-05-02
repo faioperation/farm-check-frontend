@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import useAuth from "./useAuth";
 import Cookies from "js-cookie";
 import { BASE_URL } from "../config/api";
+import toast from "react-hot-toast";
 
 // Module-level singleton
 const axiosSecureInstance = axios.create({
@@ -36,7 +37,7 @@ const useAxiosSecure = () => {
     );
 
     // ONLY logout on 401 (token missing/expired)
-    // 403 = no subscription/permission — keep user logged in, let guard handle it
+    // 403 = no subscription/permission — redirect to billing
     ids.current.res = axiosSecureInstance.interceptors.response.use(
         (response) => response,
         (error) => {
@@ -44,6 +45,9 @@ const useAxiosSecure = () => {
             if (status === 401) {
                 logOutUser();
                 navigate("/auth/login");
+            } else if (status === 403) {
+                toast.error("Your subscription has expired. Please renew your plan.", { id: "sub-expired" });
+                navigate("/admin/subscription/billing");
             }
             return Promise.reject(error);
         }

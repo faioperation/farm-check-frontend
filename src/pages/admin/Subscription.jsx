@@ -149,18 +149,22 @@ const Subscription = () => {
           </p>
         </div>
 
-        <div className="bg-[#FFF6E9] w-max p-2">
-          <p className="text-[#0A0A0A]">
-            Next renewal date : {currentPlan?.endDate?.split("T")[0].split("-").reverse().join("-") ?? "—"}
+        <div className={`w-max p-2 rounded ${currentPlan?.status !== "ACTIVE" || (currentPlan?.endDate && new Date(currentPlan.endDate) < new Date()) ? "bg-red-100" : "bg-[#FFF6E9]"}`}>
+          <p className={`${currentPlan?.status !== "ACTIVE" || (currentPlan?.endDate && new Date(currentPlan.endDate) < new Date()) ? "text-red-700 font-semibold" : "text-[#0A0A0A]"}`}>
+            {currentPlan?.status !== "ACTIVE" || (currentPlan?.endDate && new Date(currentPlan.endDate) < new Date()) ? "Expired on : " : "Next renewal date : "}
+            {currentPlan?.endDate?.split("T")[0].split("-").reverse().join("-") ?? "—"}
           </p>
         </div>
       </div>
 
-      {/*  Dynamic Plan Component */}
       <Plan
         plans={plans}
         features={currentPlan?.feature || []}
         currentPlanId={currentPlan?.planId}
+        isExpiredPlan={
+          currentPlan?.status !== "ACTIVE" ||
+          (currentPlan?.endDate && new Date(currentPlan.endDate) < new Date())
+        }
         currentBillingCycle={currentPlan?.priceType ?? "monthly"}
         onSubscribe={handleSubscribe}
         loadingPlanId={loadingPlanId}
