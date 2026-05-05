@@ -54,7 +54,7 @@ const Contact = () => {
             transition={{ duration: 0.6 }}
             className="lg:w-[38%] bg-[#0F172B] p-10 md:p-14 relative overflow-hidden flex flex-col justify-start"
           >
-            {/* Background Decorative Circles */}
+            {/* Background Decorative Circles*/}
             <div className="absolute bottom-[-60px] right-[-60px] w-[350px] h-[350px] bg-slate-800/40 rounded-full z-0"></div>
             <div className="absolute top-[20%] right-[-80px] w-[180px] h-[180px] bg-slate-700/20 rounded-full blur-xl z-0"></div>
 
