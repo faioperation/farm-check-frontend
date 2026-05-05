@@ -14,23 +14,30 @@ const Contact = () => {
     e.preventDefault();
     setLoading(true);
 
-    // Replace these with your actual EmailJS credentials
-    const serviceId = "service_zoux3ru";
-    const templateId = "template_bup4wlv";
-    const publicKey = "M-TrnCB_xCVsTnsX8";
+    const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
+    const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
+    const autoReplyTemplateId = import.meta.env.VITE_EMAILJS_AUTO_REPLY_TEMPLATE_ID;
+    const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
 
     emailjs
       .sendForm(serviceId, templateId, formRef.current, publicKey)
       .then(
-        (result) => {
+        () => {
+          if (autoReplyTemplateId && autoReplyTemplateId !== "YOUR_AUTO_REPLY_TEMPLATE_ID_HERE") {
+            emailjs
+              .sendForm(serviceId, autoReplyTemplateId, formRef.current, publicKey)
+              .then(() => console.log("Auto-reply sent successfully!"))
+              .catch((err) => console.error("Auto-reply failed:", err));
+          }
+
           toast.success("Message sent successfully!");
           setLoading(false);
-          e.target.reset(); // Reset form fields
+          e.target.reset(); 
         },
         (error) => {
-          toast.error("Failed to send the message, please try again.");
+          toast.error("Failed to send message. Check EmailJS Gmail connection.");
           setLoading(false);
-          console.error(error);
+          console.error("EmailJS Error:", error);
         }
       );
   };
