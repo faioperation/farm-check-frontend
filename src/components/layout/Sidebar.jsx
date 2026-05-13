@@ -131,7 +131,9 @@ export default function Sidebar({ isOpen, onClose }) {
         <div className="flex h-full flex-col">
           {/* Header */}
           <div className="px-6 py-6">
-            <Image src="/logo.png" alt="Company Logo" />
+            <Link to="/">
+              <Image src="/logo.png" alt="Logo" />
+            </Link>
 
             <p className="text-sm mt-4">{roleText[role]?.title}</p>
 

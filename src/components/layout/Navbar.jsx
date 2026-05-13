@@ -6,6 +6,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import Image from "../Image";
 import logo from "/logo.png";
 import { motion, AnimatePresence } from "framer-motion";
+import Cookies from "js-cookie";
 
 const navitems = [
   { name: "Home", href: "home" },
@@ -21,6 +22,7 @@ const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const role = Cookies.get("userRole");
   useEffect(() => {
     if (location.pathname !== "/") return;
 
@@ -131,11 +133,19 @@ const Navbar = () => {
             whileTap={{ scale: 0.98 }}
             className="hidden md:block"
           >
-            <Link to="/auth/login">
-              <button className="bg-[#F6A62D] text-white font-bold text-base px-6 py-3 rounded-xl cursor-pointer shadow-md shadow-orange-500/20 hover:shadow-orange-500/30 transition-shadow">
-                Login for business
-              </button>
-            </Link>
+            {role ? (
+              <Link to={role === "SYSTEM_OWNER" ? "/owner/dashboard" : "/admin/home"}>
+                <button className="bg-[#F6A62D] text-white font-bold text-base px-6 py-3 rounded-xl cursor-pointer shadow-md shadow-orange-500/20 hover:shadow-orange-500/30 transition-shadow">
+                  Dashboard {role && `(${role === "SYSTEM_OWNER" ? "System Owner" : "Farm Admin"})`}
+                </button>
+              </Link>
+            ) : (
+              <Link to="/auth/login">
+                <button className="bg-[#F6A62D] text-white font-bold text-base px-6 py-3 rounded-xl cursor-pointer shadow-md shadow-orange-500/20 hover:shadow-orange-500/30 transition-shadow">
+                  Login for business
+                </button>
+              </Link>
+            )}
           </motion.div>
         </motion.div>
 
@@ -190,11 +200,19 @@ const Navbar = () => {
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.4 }}
                 >
-                  <Link to="/auth/login" onClick={() => setOpen(false)}>
-                    <button className="bg-[#F6A62D] w-full text-white font-bold text-lg px-4 py-4 rounded-xl shadow-lg shadow-orange-500/20">
-                      Login for business
-                    </button>
-                  </Link>
+                  {role ? (
+                    <Link to={role === "SYSTEM_OWNER" ? "/owner/dashboard" : "/admin/home"} onClick={() => setOpen(false)}>
+                      <button className="bg-[#F6A62D] w-full text-white font-bold text-lg px-4 py-4 rounded-xl shadow-lg shadow-orange-500/20">
+                        Dashboard {role && `(${role === "SYSTEM_OWNER" ? "Platform Owner" : "Farm Admin"})`}
+                      </button>
+                    </Link>
+                  ) : (
+                    <Link to="/auth/login" onClick={() => setOpen(false)}>
+                      <button className="bg-[#F6A62D] w-full text-white font-bold text-lg px-4 py-4 rounded-xl shadow-lg shadow-orange-500/20">
+                        Login for business
+                      </button>
+                    </Link>
+                  )}
                 </motion.div>
               </ul>
             </motion.div>
