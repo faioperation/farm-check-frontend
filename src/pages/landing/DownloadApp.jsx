@@ -4,6 +4,7 @@ import Image from "../../components/Image";
 import appleStore from "/appleStore.png";
 import googlePlay from "/googlePlay.png";
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 
 const DownloadApp = () => {
   return (
@@ -31,18 +32,18 @@ const DownloadApp = () => {
               whileHover={{ scale: 1.05, y: -5 }}
               whileTap={{ scale: 0.95 }}
             >
-              <a href="#" className="block">
+              <Link to="https://play.google.com/store/apps/details?id=com.farmcheckapp.app" className="block">
                 <Image src={googlePlay} alt="Google Play" className="h-14" />
-              </a>
+              </Link>
             </motion.button>
 
             <motion.button
               whileHover={{ scale: 1.05, y: -5 }}
               whileTap={{ scale: 0.95 }}
             >
-              <a href="#" className="block">
+              <Link to="https://apps.apple.com/us/app/farm-check-app/id6760742892" className="block">
                 <Image src={appleStore} alt="App Store" className="h-14" />
-              </a>
+              </Link>
             </motion.button>
           </div>
         </motion.div>
